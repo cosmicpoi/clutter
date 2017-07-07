@@ -37,7 +37,6 @@ class Clutter extends AbstractPicoPlugin
             $retstr = $retstr .$anchor.'/';
         }
 
-        // return $aggregate;
 
         return $retstr;
     }
@@ -49,7 +48,6 @@ class Clutter extends AbstractPicoPlugin
     public function level($string) {
         $pieces = explode('/','/' . $string);
 
-        // if ($string=="index") {return 2;}
         if ($pieces[count($pieces)-1] == 'index') {
             return count($pieces)-1;
         }
