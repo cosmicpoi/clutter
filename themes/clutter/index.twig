@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta name="author" content="Alan Luo, http://alanluo.com">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex" />
-  {% if meta.description %}
+  {% if meta.robots %}
+    <meta name="robots" content="{{ meta.robots }}">
+  {% endif %}{% if meta.description %}
     <meta name="description" content="{{ meta.description|striptags }}">
   {% endif %}
   <title>{% if meta.title %}{{ meta.title }} | {% endif %}{{ site_title }}</title>
@@ -19,6 +19,21 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'] ],
+        displayMath: [ ['$$','$$'] ],
+        skipTags: ["script","noscript","style","textarea"]
+      }
+    });
+    MathJax.Hub.Queue(function () {
+      $('.MathJax_Preview').parent().css('border','none').css('background','none').css('color','black');
+      $('.MathJax_Display').css('margin','-1em 0 -1em 0');
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js"></script>
 
