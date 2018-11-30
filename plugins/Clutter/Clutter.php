@@ -1,60 +1,56 @@
 <?php
 
-class Clutter extends AbstractPicoPlugin
-{
+class Clutter extends AbstractPicoPlugin {
     protected $enabled = true;
 
-    
+    const API_VERSION = 2;
 
-    /**
-     * Triggered before Pico renders the page
-     *
-     * @see    Pico::getTwig()
-     * @see    DummyPlugin::onPageRendered()
-     * @param  Twig_Environment &$twig          twig template engine
-     * @param  array            &$twigVariables template variables
-     * @param  string           &$templateName  file name of the template
-     * @return void
-     */
     public function root($string) {
         preg_match('/^([^\/]+\/)+/', $string, $matches);
-        return $matches[0];
+        if (count($matches))
+            return $matches[0];
+        else
+            return '';
     }
-    public function directoryChain($string) {
-        $baseurl = Pico::getBaseUrl();
-        $pieces = explode('/','/' . $string);
 
-        $retstr = '';
+    public function level($string) {
+        $pieces = explode('/', '/' . $string);
+
+        if ($pieces[count($pieces) - 1] == 'index') {
+            return count($pieces) - 1;
+        }
+        return count($pieces);
+    }
+
+    public function isIndex($string) {
+        $pieces = explode('/', $string);
+        return ($pieces[count($pieces) - 1] == 'index');
+
+    }
+
+    public function directoryChain($string) {
+        $baseUrl = $this->getPico()->getBaseUrl();
+        $pieces = explode('/', '/' . $string);
+
+        $returnStringParts = [];
         $aggregate = '';
 
         $arr2s = '';
 
-        for($i = 1; $i<count($pieces)-1; $i++) {
-            $arr2s = $arr2s.','.$pieces[i];
+        for ($i = 1; $i < count($pieces); $i++) {
+            $arr2s = $arr2s . ',' . $pieces[$i];
             $aggregate = $aggregate . $pieces[$i] . '/';
-            // return $aggregate;
-            $anchor = '<a href="'.$baseurl.'?'.$aggregate.'">'.$pieces[$i].'</a>';
-            $retstr = $retstr .$anchor.'/';
+
+            $anchor = sprintf('<a href="%s?%s">%s</a>', $baseUrl, $aggregate, $pieces[$i]);
+            //$returnString = $returnString . $anchor . '/';
+            $returnStringParts[] = $anchor;
         }
-
-
-        return $retstr;
+        return implode('/', $returnStringParts);
     }
-    public function isIndex($string) {
-        $pieces = explode('/',$string);
-        return ($pieces[count($pieces)-1]=='index');
-        
-    }
-    public function level($string) {
-        $pieces = explode('/','/' . $string);
 
-        if ($pieces[count($pieces)-1] == 'index') {
-            return count($pieces)-1;
-        }
-        return count($pieces);
-    }
-    public function onPageRendering(Twig_Environment &$twig, array &$twigVariables, &$templateName)
-    {
+    //public function onPageRendering(&$templateName, array &$twigVariables) {
+    public function onPagesDiscovered(&$pages) {
+        $twig = $this->getPico()->getTwig();
 
         $twig->addFilter(new Twig_SimpleFilter('directoryChain', array($this, 'directoryChain')));
         $twig->addFilter(new Twig_SimpleFilter('root', array($this, 'root')));
